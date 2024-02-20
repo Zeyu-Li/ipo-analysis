@@ -61,7 +61,7 @@ def main():
         plt.plot(v.index, v["normalized"], label=f"{k} Closing Price")
     plt.xlabel("Date (Over Two years)")
     plt.ylabel("Price (Relative)")
-    plt.title(f"{ticker_symbol} Stock Price (First 2 Years from IPO)")
+    plt.title(f"Relative Stock Price (First 2 Years from IPO)")
     plt.grid(True)
     plt.legend()
 
