@@ -3,9 +3,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import re
 
+
 def main():
     # Define the ticker symbol (e.g., MSFT for Microsoft)
-    ticker_symbols = ["MSFT", "PYPL", "MMM"]
+    # ticker_symbols = ["MSFT", "PYPL", "MMM"]
+    ticker_symbols = ["MSFT", "PYPL"]
 
     # Fetch historical data for the first 2 years from IPO
     try:
@@ -26,13 +28,27 @@ def main():
         # end date should be two years later
         yf_dates[ticker_symbol] = (start_date, end_date)
     
-    print(yf_dates)
+    # print(yf_dates)
     
+    min_price = 0
     historical_data = {}
     for k, v in yf_dates.items():
         yf_ticker = yf.Ticker(k)
-        historical_data[k] = (yf_ticker.history(start=v[0], end=v[1]))
+        historical_data[k] = yf_ticker.history(start=v[0], end=v[1])
+        # print(historical_data[k])
 
+
+    # Find the maximum start date among all datasets
+    max_start_date = max(data.index.min() for data in historical_data.values())
+
+    # normalize dates
+    for k, v in historical_data.items():
+        shift_amount = (max_start_date - v.index.min()).days
+        v.index = v.index + pd.Timedelta(days=shift_amount)
+        # historical_data[k] = normalize_data(min_date, v)
+
+    # print(historical_data)
+    # TODO: normalize date and price
     # print(historical_data)
     # Plot the closing price as a line chart
     plt.figure(figsize=(10, 6))
@@ -50,7 +66,7 @@ def main():
     print("Stock price chart saved as stock_price_chart.png")
 
     # Alternatively, you can display the plot interactively in a Jupyter Notebook or other interactive environments.
-    plt.show()
+    # plt.show()
 
 if __name__ == "__main__":
     main()
