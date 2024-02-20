@@ -6,8 +6,8 @@ import re
 
 def main():
     # Define the ticker symbol (e.g., MSFT for Microsoft)
-    # ticker_symbols = ["MSFT", "PYPL", "MMM"]
-    ticker_symbols = ["MSFT", "PYPL"]
+    ticker_symbols = ["MSFT", "PYPL", "MMM", "AMZN", "EA"]
+    # ticker_symbols = ["MSFT", "PYPL"]
 
     # Fetch historical data for the first 2 years from IPO
     try:
@@ -29,8 +29,6 @@ def main():
         yf_dates[ticker_symbol] = (start_date, end_date)
     
     # print(yf_dates)
-    
-    min_price = 0
     historical_data = {}
     for k, v in yf_dates.items():
         yf_ticker = yf.Ticker(k)
@@ -41,10 +39,16 @@ def main():
     # Find the maximum start date among all datasets
     max_start_date = max(data.index.min() for data in historical_data.values())
 
+    normalized_prices = []
     # normalize dates
     for k, v in historical_data.items():
         shift_amount = (max_start_date - v.index.min()).days
         v.index = v.index + pd.Timedelta(days=shift_amount)
+        first_value = v.iloc[0]['Close']
+        # Normalize by dividing each value by the first value
+        normalized_history = v['Close'] / first_value
+        normalized_prices.append(normalized_history)
+        v["normalized"] = normalized_history
         # historical_data[k] = normalize_data(min_date, v)
 
     # print(historical_data)
@@ -54,9 +58,9 @@ def main():
     plt.figure(figsize=(10, 6))
     
     for k, v in historical_data.items():
-        plt.plot(v.index, v["Close"], label=f"{k} Closing Price")
-    plt.xlabel("Date")
-    plt.ylabel("Price (USD)")
+        plt.plot(v.index, v["normalized"], label=f"{k} Closing Price")
+    plt.xlabel("Date (Over Two years)")
+    plt.ylabel("Price (Relative)")
     plt.title(f"{ticker_symbol} Stock Price (First 2 Years from IPO)")
     plt.grid(True)
     plt.legend()

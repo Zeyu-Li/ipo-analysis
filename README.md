@@ -13,4 +13,4 @@ scale is a moat of its own.
 
 ### Results
 
-
+![stock_chart](./stock_price_chart.png)
